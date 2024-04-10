@@ -9,9 +9,7 @@ int	exchanger( std::string filename )
 		exchange.setExchangeRate(filename);
 	}
 	else
-	{
 		throw BitcoinExchange::BadFileException();
-	}
 	return (0);
 
 }

@@ -26,7 +26,7 @@ bool	BitcoinExchange::checkFile( std::string const &infile )
 	std::ifstream	file(infile.c_str());
 
 	if (infile.empty() || !file.is_open())
-		throw BitcoinExchange::BadFileException();
+		return false;
 	return true;
 }
 
