@@ -3,6 +3,7 @@
 # include <iostream>
 # include <sstream>
 # include <fstream>
+# include <limits>
 # include <string>
 # include <map>
 
@@ -10,6 +11,7 @@ class BitcoinExchange
 {
 	private:
 		std::map<std::string, float> _exchangeRate;
+		std::map<std::string, float> _bAmount;
 	
 	public:
 		BitcoinExchange();
@@ -18,8 +20,10 @@ class BitcoinExchange
 		BitcoinExchange 				&operator=( BitcoinExchange const &object );
 		bool							checkFile( std::string const &infile );
 		void							setExchangeRate( std::string const &filename );
-		bool							checkValue( float value ) const;
+		bool							validateValue( float value ) const;
 		bool							checkDate( std::string date ) const;
+		bool							checkValue( std::string value ) const;
+		void							getAmount( float value, float rate) const;
 		std::map<std::string, float>	BitcoinExchange::getExchangeRate( void ) const;
 		class BadFileException : public std::exception
 		{
