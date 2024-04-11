@@ -2,7 +2,7 @@
 
 BitcoinExchange::BitcoinExchange()
 {
-
+	setExchangeRate("input.csv");
 }
 
 BitcoinExchange::BitcoinExchange( BitcoinExchange const &object )
@@ -35,6 +35,11 @@ void	BitcoinExchange::setExchangeRate( std::string const &filename )
 	//read from input.csv to set _exchangeRate keys (dates) and values (exchange rates):
 	//try to open input.csv
 	//read line by line first one until a comma is catch and add it to key and then until a newline is catch and add it to value
+}
+
+void	BitcoinExchange::setExchangeRate( std::string const &filename )
+{
+	//make a function to fill the map with desired dates and bitcoin amounts
 }
 
 bool	BitcoinExchange::checkValue( std::string value ) const

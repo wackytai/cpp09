@@ -20,6 +20,7 @@ class BitcoinExchange
 		BitcoinExchange 				&operator=( BitcoinExchange const &object );
 		bool							checkFile( std::string const &infile );
 		void							setExchangeRate( std::string const &filename );
+		void							setBitcoinAmount( std::string const &filename );
 		bool							validateValue( float value ) const;
 		bool							checkDate( std::string date ) const;
 		bool							checkValue( std::string value ) const;
