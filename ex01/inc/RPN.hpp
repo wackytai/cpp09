@@ -21,6 +21,7 @@ class RPN
 		int			subtract( int a, int b );
 		void		checkInput( const std::string &input );
 		void		updateStack ( const char *str );
+		void		getResult() const;
 		class InvalidExpression : public std::exception
 		{
 			public:

@@ -43,8 +43,6 @@ void	RPN::calculate( const char *str )
 		default:
 			break ;
 	}
-	std::cout << "Calculating: " << b << str[0] << a << std::endl;
-	std::cout << "Result: " << _stack.top() << std::endl;
 	updateStack(++str);
 }
 
@@ -94,7 +92,6 @@ void	RPN::updateStack ( const char *str )
 		if (isdigit(str[0]))
 		{
 			_stack.push(str[0] - '0');
-			std::cout << "Pushed: " << str[0] << std::endl;
 			str++;
 		}
 		else
@@ -128,6 +125,11 @@ void	RPN::checkInput( const std::string &input )
 			str += input[i];
 	std::cout << "Valid expression: " << str << std::endl;
 	updateStack(str.c_str());
+}
+
+void	RPN::getResult() const
+{
+	std::cout << _stack.top() << std::endl;
 }
 
 const char	*RPN::InvalidExpression::what() const throw()

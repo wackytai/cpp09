@@ -19,6 +19,7 @@ void testCalculation( std::string expression )
 	try
 	{
 		rpn.checkInput(expression);
+		rpn.getResult();
 	}
 	catch (RPN::InvalidExpression &e)
 	{
