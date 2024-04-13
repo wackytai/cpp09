@@ -2,7 +2,18 @@
 
 BitcoinExchange::BitcoinExchange()
 {
-	setExchangeRate("input.csv");
+	std::cout << "input.csv:" << std::endl;
+	setMap("./dbs/input.csv", _exchangeRate);
+	std::cout << "no input" << std::endl;
+	setMap( "", _bAmount);
+}
+
+BitcoinExchange::BitcoinExchange( std::string const &filename )
+{
+	std::cout << "input.csv:" << std::endl;
+	setMap("./dbs/input.csv", _exchangeRate);
+	std::cout << filename << std::endl;
+	setMap("./dbs/" + filename, _bAmount);
 }
 
 BitcoinExchange::BitcoinExchange( BitcoinExchange const &object )
@@ -17,6 +28,7 @@ BitcoinExchange &BitcoinExchange::operator=( BitcoinExchange const &object )
 	if (this != &object)
 	{
 		this->_exchangeRate = object._exchangeRate;
+		this->_bAmount = object._bAmount;
 	}
 	return (*this);
 }
@@ -30,21 +42,45 @@ bool	BitcoinExchange::checkFile( std::string const &infile )
 	return true;
 }
 
-void	BitcoinExchange::setExchangeRate( std::string const &filename )
+void	BitcoinExchange::setMap( std::string const &filename, std::map<std::string, std::string> &map )
 {
-	//read from input.csv to set _exchangeRate keys (dates) and values (exchange rates):
-	//try to open input.csv
-	//read line by line first one until a comma is catch and add it to key and then until a newline is catch and add it to value
+	std::ifstream	file(filename.c_str());
+	std::string 	line;
+	std::string		key;
+	std::string		value;
+
+	if (!checkFile(filename))
+		throw BadFileException();
+	while (std::getline(file, line))
+	{
+		if (line == "date | value")
+			continue;
+		if (line.length() < 10)
+		{
+			key = line;
+			value = "";
+		}
+		else if (line.substr(10, 3) != " | " || (!isdigit(line[13]) && line[13] != '-'))
+		{
+			key = line.substr(0, 10);
+			value = "";
+		}
+		else
+		{
+			key = line.substr(0, 10);
+			value = line.substr(11, line.length() - 11);
+		}
+		map[key] = value;
+		std::cout << key << " => " << value << std::endl;
+ 
+	}
 }
 
-void	BitcoinExchange::setExchangeRate( std::string const &filename )
-{
-	//make a function to fill the map with desired dates and bitcoin amounts
-}
 
 bool	BitcoinExchange::checkValue( std::string value ) const
 {
-	if (value[value.length() -1] == 'f')
+	(void)value;
+	/* if (value[value.length() -1] == 'f')
 	{
 		int dot = 0;
 		for (int i = 0; i < value.length() - 1; i++)
@@ -66,7 +102,7 @@ bool	BitcoinExchange::checkValue( std::string value ) const
 			return false;
 		}
 		//see if it's in int range
-	}
+	} */
 	return true;
 }
 
@@ -108,7 +144,7 @@ bool	BitcoinExchange::checkDate( std::string date ) const
 	return true;
 }
 
-std::map<std::string, float>	BitcoinExchange::getExchangeRate( void ) const
+std::map<std::string, std::string>	BitcoinExchange::getExchangeRate( void ) const
 {
 	return (this->_exchangeRate);
 }
@@ -126,8 +162,9 @@ const char	*BitcoinExchange::BadFileException::what() const throw()
 
 std::ostream	&operator<<(std::ostream &out, BitcoinExchange const &object)
 {
+	(void)object;
 	out << "date | value" << std::endl;
-	//iterate the map for the .txt file received at start of program
+	/* //iterate the map for the .txt file received at start of program
 	for (std::map<std::string, float>::const_iterator it = object.getExchangeRate().begin(); it != object.getExchangeRate().end(); it++)
 	{
 		if (object.checkDate(it->first))
@@ -140,6 +177,6 @@ std::ostream	&operator<<(std::ostream &out, BitcoinExchange const &object)
 			object.getAmount(it->second, it->second);
 			out << std::endl;
 		}
-	}
+	} */
 	return out;
 }

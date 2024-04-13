@@ -2,11 +2,8 @@
 
 int	exchanger( std::string filename )
 {
-	BitcoinExchange	exchange;
+	BitcoinExchange	exchange ( filename );
 
-	if (!exchange.checkFile(filename))
-		throw BitcoinExchange::BadFileException();
-	exchange.setExchangeRate(filename);
 	return 0;
 
 }
