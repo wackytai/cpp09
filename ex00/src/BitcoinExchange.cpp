@@ -50,10 +50,13 @@ void	BitcoinExchange::setMap( std::string const &filename, std::map<std::string,
 	std::string		value;
 
 	if (!checkFile(filename))
+		throw CantOpenFileException();
+	std::getline(file, line);
+	if (line != "date | line" && line.length() != 12)
 		throw BadFileException();
 	while (std::getline(file, line))
 	{
-		if (line == "date | value")
+		if (line != "date | value")
 			continue;
 		if (line.length() < 10)
 		{
@@ -85,7 +88,7 @@ bool	BitcoinExchange::checkValue( std::string value ) const
 	if (!(iss >> f))
 	{
 		int dot = 0;
-		for (int i = 0; i < value.length(); i++)
+		for (size_t i = 0; i < value.length(); i++)
 		{
 			if (i == 0 && value[i] == '-')
 				continue;
@@ -195,11 +198,6 @@ void	BitcoinExchange::getAmount( std::string date ) const
 	return ;
 }
 
-const char	*BitcoinExchange::BadFileException::what() const throw()
-{
-	return ("Error: could not open file.");
-}
-
 std::ostream	&operator<<(std::ostream &out, BitcoinExchange const &object)
 {
 	out << "date | value" << std::endl;
@@ -217,4 +215,14 @@ std::ostream	&operator<<(std::ostream &out, BitcoinExchange const &object)
 		}
 	}
 	return out;
+}
+
+const char	*BitcoinExchange::BadFileException::what() const throw()
+{
+	return ("Error: bad header.");
+}
+
+const char	*BitcoinExchange::CantOpenFileException::what() const throw()
+{
+	return ("Error: could not open file.");
 }

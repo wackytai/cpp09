@@ -28,6 +28,11 @@ class BitcoinExchange
 		void								getAmount( std::string date ) const;
 		std::map<std::string, std::string>	getExchangeRate( void ) const;
 		std::map<std::string, std::string>	getBAmount( void ) const;
+		class CantOpenFileException : public std::exception
+		{
+			public:
+				const char *what( void ) const throw();
+		};
 		class BadFileException : public std::exception
 		{
 			public:

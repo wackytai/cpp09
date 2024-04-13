@@ -17,9 +17,13 @@ int	main( int argc, char **argv )
 		else
 			exchanger( argv[1] );
 	}
+	catch(const BitcoinExchange::CantOpenFileException& e)
+	{
+		std::cerr << e.what() << '\n';
+	}
 	catch(const BitcoinExchange::BadFileException& e)
 	{
 		std::cerr << e.what() << '\n';
 	}
-	
+	return 0;
 }
