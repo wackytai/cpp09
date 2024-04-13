@@ -79,41 +79,48 @@ void	BitcoinExchange::setMap( std::string const &filename, std::map<std::string,
 
 bool	BitcoinExchange::checkValue( std::string value ) const
 {
-	(void)value;
-	/* if (value[value.length() -1] == 'f')
+	std::istringstream iss(value);
+	float f;
+
+	if (!(iss >> f))
 	{
 		int dot = 0;
-		for (int i = 0; i < value.length() - 1; i++)
+		for (int i = 0; i < value.length(); i++)
 		{
+			if (i == 0 && value[i] == '-')
+				continue;
 			if (value[i] == '.')
+			{
 				dot++;
-			if ((!isdigit(value[i]) && value[i] != '.') || dot > 1)
+				continue;
+			}
+			if (i == value.length() - 1 && value[i] == 'f')
+			continue;
+			if (!isdigit(value[i]) || dot > 1)
 			{
 				std::cout << "Error: value is not a number.";
 				return false;
 			}
 		}
+ 		std::cout << "Error: number out of range.";
+		return false;
 	}
-	for (int i = 0; i < value.length(); i++)
-	{
-		if (!isdigit(value[i]))
-		{
-			std::cout << "Error: value is not a number.";
-			return false;
-		}
-		//see if it's in int range
-	} */
 	return true;
 }
 
-bool	BitcoinExchange::validateValue( float value ) const
+bool	BitcoinExchange::validateValue( std::string value ) const
 {
-	if (value < 0)
+	std::istringstream iss(value);
+	float val;
+
+	if (!(iss >> val))
+		val = 1001;
+	if (val < 0)
 	{
 		std::cout << "Error: value is not positive.";
 		return false;
 	}
-	else if (value > 1000)
+	else if (val > 1000)
 	{
 		std::cout << "Error: too large a number.";
 		return false;
@@ -140,8 +147,27 @@ bool	BitcoinExchange::checkDate( std::string date ) const
 		|| ((m == 2 && (y == 2008 || y == 2012 || y == 2016 || y == 2020 || y == 2024) && d > 29)
 		|| (m == 2 && d > 28)) || ((m == 4 || m == 6 || m == 9 || m == 11) && d > 30))
 		return false;
-	//make a validateDate() function that returns the closest date (it should get lower, not higher)?
 	return true;
+}
+
+std::string	BitcoinExchange::getClosestDate( std::string date ) const
+{
+	std::map<std::string, std::string>::const_iterator it = _exchangeRate.find(date);
+	if (it != _exchangeRate.end())
+		return date;
+	else
+	{
+		for (it = _exchangeRate.begin(); it != _exchangeRate.end(); it++)
+		{
+			if (it->first > date)
+			{
+				it--;
+				return it->first;
+			}
+		}
+		it--;
+		return it->first;
+	}
 }
 
 std::map<std::string, std::string>	BitcoinExchange::getExchangeRate( void ) const
@@ -149,9 +175,23 @@ std::map<std::string, std::string>	BitcoinExchange::getExchangeRate( void ) cons
 	return (this->_exchangeRate);
 }
 
-void	BitcoinExchange::getAmount( float value, float rate ) const
+std::map<std::string, std::string>	BitcoinExchange::getBAmount( void ) const
 {
-	std::cout << value * rate;
+	return (this->_bAmount);
+}
+
+void	BitcoinExchange::getAmount( std::string date ) const
+{
+	std::map<std::string, std::string>::const_iterator it_1 = _exchangeRate.find(date);
+	std::map<std::string, std::string>::const_iterator it_2 = _bAmount.find(date);
+	std::istringstream issR(it_1->second);
+	std::istringstream issV(it_2->second);
+	float rate;
+	float value;
+
+	issR >> rate;
+	issV >> value;
+	std::cout << it_2->second << " * " << it_1->second << value * rate;
 	return ;
 }
 
@@ -162,21 +202,19 @@ const char	*BitcoinExchange::BadFileException::what() const throw()
 
 std::ostream	&operator<<(std::ostream &out, BitcoinExchange const &object)
 {
-	(void)object;
 	out << "date | value" << std::endl;
-	/* //iterate the map for the .txt file received at start of program
-	for (std::map<std::string, float>::const_iterator it = object.getExchangeRate().begin(); it != object.getExchangeRate().end(); it++)
+	for (std::map<std::string, std::string>::const_iterator it_1 = object.getBAmount().begin(); it_1 != object.getBAmount().end(); it_1++)
 	{
-		if (object.checkDate(it->first))
-			out << "Error: bad input => " << it->first << std::endl;
-		else if (!object.validateValue(it->second))
+		if (object.checkDate(it_1->first))
+			out << "Error: bad input => " << it_1->first << std::endl;
+		else if (!object.checkValue(it_1->second) || !object.validateValue(it_1->second))
 			out << std::endl;
 		else
 		{
-			out << it->first << " => " << it->second;
-			object.getAmount(it->second, it->second);
+			out << object.getClosestDate(it_1->first) << " => ";
+			object.getAmount(object.getClosestDate(it_1->first));
 			out << std::endl;
 		}
-	} */
+	}
 	return out;
 }

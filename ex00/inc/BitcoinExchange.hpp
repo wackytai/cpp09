@@ -21,11 +21,13 @@ class BitcoinExchange
 		BitcoinExchange 					&operator=( BitcoinExchange const &object );
 		bool								checkFile( std::string const &infile );
 		void								setMap( std::string const &filename, std::map<std::string, std::string> &map );
-		bool								validateValue( float value ) const;
-		bool								checkDate( std::string date ) const;
 		bool								checkValue( std::string value ) const;
-		void								getAmount( float value, float rate) const;
+		bool								validateValue( std::string value ) const;
+		bool								checkDate( std::string date ) const;
+		std::string							getClosestDate( std::string date ) const;
+		void								getAmount( std::string date ) const;
 		std::map<std::string, std::string>	getExchangeRate( void ) const;
+		std::map<std::string, std::string>	getBAmount( void ) const;
 		class BadFileException : public std::exception
 		{
 			public:

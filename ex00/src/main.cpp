@@ -3,7 +3,7 @@
 int	exchanger( std::string filename )
 {
 	BitcoinExchange	exchange ( filename );
-
+	std::cout << exchange;
 	return 0;
 
 }
