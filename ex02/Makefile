@@ -1,7 +1,7 @@
-NAME = 
+NAME = PmergeMe
 SOURCES = $(wildcard ./src/*.cpp)
 CC = @c++
-CFLAGS = -Wall -Wextra -Werror -std=c++98 -pedantic -fsanitize=address,undefined
+CFLAGS = -Wall -Wextra -Werror -g3 -std=c++98 -pedantic -fsanitize=address,undefined
 
 all: $(NAME)
 $(NAME): $(SOURCES)
