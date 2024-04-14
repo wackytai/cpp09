@@ -10,7 +10,7 @@
 class PmergeMe
 {
 	private:
-		std::vector<std::pair<int, int> > _seq;
+		std::vector<int> _seq;
 
 	public:
 		PmergeMe();
@@ -18,6 +18,10 @@ class PmergeMe
 		~PmergeMe();
 		PmergeMe &operator=(const PmergeMe &object);
 		bool validateInput(char **input);
+		void inPairComparison( void );
+		void orderPairs( void );
+		void dividePairs( void );
+		std::vector<int> merge( std::vector<int> &main, std::vector<int> &left );
 		class InvalidInputException : public std::exception
 		{
 			public:
