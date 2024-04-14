@@ -151,10 +151,13 @@ std::vector<int> PmergeMe::merge( std::vector<int> &main, std::vector<int> &left
 	}
 	if (isOdd)
 	{
-		itM = main.begin();
-		while (*itM < *itL)
-			itM++;
-		main.insert(itM, *itL);
+		while (itL != left.end())
+		{
+			itM = main.begin();
+			while (*itM < *itL)
+				itM++;
+			main.insert(itM, *itL++);
+		}
 	}
 	std::cout << "After: ";
 	for (std::vector<int>::iterator it = main.begin(); it != main.end(); it++)
