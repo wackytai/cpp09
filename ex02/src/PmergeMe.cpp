@@ -54,48 +54,40 @@ bool PmergeMe::validateInput(char **input)
 
 void PmergeMe::inPairComparison( void )
 {
-	std::vector<int>::iterator it = _seq.begin();
+	bool isSwapped = true;
 
-	while (it != _seq.end())
+	while (isSwapped)
 	{
-		if (it == _seq.end() - 1)
-			break ;
-		else if (*it > *(it + 1))
-		{
-			std::iter_swap(it, it + 1);
-			it = _seq.begin();
-		}
-		else
-			it += 2;
+		isSwapped = false;
+		for (std::vector<int>::iterator it = _seq.begin(); it < _seq.end() - 1; it += 2)
+        {
+            if (*it > *(it + 1))
+            {
+                std::iter_swap(it, it + 1);
+                isSwapped = true;
+            }
+        }
 	}
-	std::cout << "#1 Step: ";
-	for (it = _seq.begin(); it != _seq.end(); it++)
-		std::cout << *it << " ";
-	std::cout << std::endl;
 	orderPairs();
 }
 
 void PmergeMe::orderPairs( void )
 {
-	std::vector<int>::iterator it = _seq.begin();
+	bool isSwapped = true;
 
-	while (it != _seq.end())
+	while (isSwapped)
 	{
-		if (it == _seq.end() - 1)
-			break ;
-		else if (it + 3 < _seq.end() && *(it + 3) < *(it + 1))
-		{
-			std::iter_swap(it, it + 2);
-			std::iter_swap(it + 1, it + 3);
-			it = _seq.begin();
-		}
-		else
-			it += 2;
+		isSwapped = false;
+		for (std::vector<int>::iterator it = _seq.begin(); it < _seq.end() - 3; it += 2)
+        {
+            if (it + 3 < _seq.end() && *(it + 3) < *(it + 1))
+            {
+                std::iter_swap(it, it + 2);
+                std::iter_swap(it + 1, it + 3);
+                isSwapped = true;
+            }
+        }
 	}
-	std::cout << "#2 Step: ";
-	for (it = _seq.begin(); it != _seq.end(); it++)
-		std::cout << *it << " ";
-	std::cout << std::endl;
 	dividePairs();
 }
 
@@ -123,16 +115,6 @@ void PmergeMe::dividePairs( void )
 			break;
 		it += 2;
 	}
-	it = main.begin();
-	std::cout << "Main chain: ";
-	for (it = main.begin(); it != main.end(); it++)
-		std::cout << *it << " ";
-	std::cout << std::endl;
-	it = left.begin();
-	std::cout << "Left: ";
-	for (it = left.begin(); it != left.end(); it++)
-		std::cout << *it << " ";
-	std::cout << std::endl;
 	_seq = merge(main, left);
 }
 
