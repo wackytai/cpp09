@@ -138,27 +138,11 @@ void PmergeMe::dividePairs( void )
 
 std::vector<int> PmergeMe::merge( std::vector<int> &main, std::vector<int> &left )
 {
-	bool isOdd = left.size() % 2 != 0;
-	std::vector<int>::iterator itM = main.begin();
-	std::vector<int>::iterator itL = left.begin();
-
-	while (itL != left.end() && itM != main.end())
-	{
-		if (*itL < *itM)
-			if ((isOdd && itL < left.end() - 1) || !isOdd)
-				itM = main.insert(itM, *itL++);
-		itM++;
-	}
-	if (isOdd)
-	{
-		while (itL != left.end())
-		{
-			itM = main.begin();
-			while (*itM < *itL)
-				itM++;
-			main.insert(itM, *itL++);
-		}
-	}
+	for (std::vector<int>::iterator itL = left.begin(); itL != left.end(); ++itL)
+    {
+        std::vector<int>::iterator itM = std::upper_bound(main.begin(), main.end(), *itL);
+        main.insert(itM, *itL);
+    }
 	std::cout << "After: ";
 	for (std::vector<int>::iterator it = main.begin(); it != main.end(); it++)
 		std::cout << *it << " ";
