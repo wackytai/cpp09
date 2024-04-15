@@ -2,6 +2,9 @@
 # define PMERGEME_HPP
 # include <iostream>
 # include <climits>
+# include <ctime>
+# include <math.h>
+# include <numeric>
 # include <vector>
 # include <algorithm>
 # include <iterator>
@@ -18,8 +21,10 @@ class PmergeMe
 		~PmergeMe();
 		PmergeMe &operator=(const PmergeMe &object);
 		bool validateInput(char **input);
+		void mergeInsertion( void );
 		void inPairComparison( void );
-		void orderPairs( void );
+		void orderPairs( std::vector<std::pair<int, int> > pairs );
+		static bool compare( const std::pair<int,int> &a, const std::pair<int,int> &b );
 		void dividePairs( void );
 		std::vector<int> merge( std::vector<int> &main, std::vector<int> &left );
 		class InvalidInputException : public std::exception
