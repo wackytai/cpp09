@@ -173,8 +173,10 @@ std::vector<int> PmergeMe::merge( std::vector<int> &main, std::vector<int> &left
 			g.push_back(2);
 		else
 		{
-			std::vector<int>::iterator it = g.end() - 1;
-			g.push_back(static_cast<int>(pow(2, g.size() + 1)) - *it);
+			int next_value = static_cast<int>(pow(2, g.size() + 1)) - g.back();
+           		g.push_back(next_value);
+			//std::vector<int>::iterator it = g.end() - 1;
+			//g.push_back(static_cast<int>(pow(2, g.size() + 1)) - *it);
 		}
 	}
 	std::vector<int>::iterator itM = main.begin();
