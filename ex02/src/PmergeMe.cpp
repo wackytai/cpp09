@@ -174,7 +174,7 @@ std::vector<int> PmergeMe::merge( std::vector<int> &main, std::vector<int> &left
 		else
 		{
 			int next_value = static_cast<int>(pow(2, g.size() + 1)) - g.back();
-           		g.push_back(next_value);
+           	g.push_back(next_value);
 			//std::vector<int>::iterator it = g.end() - 1;
 			//g.push_back(static_cast<int>(pow(2, g.size() + 1)) - *it);
 		}
@@ -183,7 +183,8 @@ std::vector<int> PmergeMe::merge( std::vector<int> &main, std::vector<int> &left
     std::vector<int>::iterator itG = g.begin();
     std::vector<int>::iterator it = left.begin();
     std::advance(it, *itG - 1);
-    std::vector<int>::iterator it1 = it;
+    std::vector<int>::iterator it1 = left.begin();
+	std::cout << "it: " << *it << " | it1: " << *it1 << " | itG: " << *itG << std::endl;
 
     while (it != left.end())
 	{
@@ -195,12 +196,16 @@ std::vector<int> PmergeMe::merge( std::vector<int> &main, std::vector<int> &left
             it--;
 	    }
 	    if (itG != g.end())
-			itG++;
+			++itG;
 	    if (it1 != left.end() && itG != g.end())
 		{
-			it = left.begin();
+			/* it = left.begin();
 	        std::advance(it, std::distance(it, it1) + 1);
-	        it1 = it - 1;
+	        it1 = it - 1; */
+			//std::advance(it, (std::accumulate(g.begin(), (itG + 1), 0) - 1));
+			it1 += (std::accumulate(g.begin(), itG, 0) - 1);
+			it = it1 + *itG;
+			std::cout << "it: " << *it << " | it1: " << *it1 << " | itG: " << *itG << std::endl;
 	    }
 		if (itG == g.end() && it1 == it)
 			break;
