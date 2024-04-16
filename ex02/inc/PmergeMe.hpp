@@ -1,19 +1,21 @@
 #ifndef PMERGEME_HPP
 # define PMERGEME_HPP
-# include <iostream>
-# include <climits>
+# include <list>
 # include <ctime>
-# include <math.h>
-# include <numeric>
 # include <vector>
-# include <algorithm>
+# include <math.h>
+# include <climits>
+# include <numeric>
 # include <iterator>
+# include <iostream>
 # include <exception>
+# include <algorithm>
 
 class PmergeMe
 {
 	private:
 		std::vector<int>	_seq;
+		std::list<int>		_lst;
 		static int64_t		groups[];
 
 	public:
@@ -29,6 +31,12 @@ class PmergeMe
 		void 				dividePairs( void );
 		std::vector<int> 	merge( std::vector<int> &main, std::vector<int> &left );
 		void				check_sorted(std::vector<int> final);
+		void 				inPairComparisonLst( void );
+		void 				orderPairsLst( std::list<std::pair<int, int> > pairs );
+		static bool 		compareLst( const std::pair<int,int> &a, const std::pair<int,int> &b );
+		void 				dividePairsLst( void );
+		std::list<int> 		mergeLst( std::list<int> &main, std::list<int> &left );
+		void				check_sortedLst(std::list<int> final);
 		class InvalidInputException : public std::exception
 		{
 			public:

@@ -27,7 +27,10 @@ PmergeMe::~PmergeMe() {}
 PmergeMe &PmergeMe::operator=(const PmergeMe &object)
 {
 	if (this != &object)
+	{
 		_seq = object._seq;
+		_lst = object._lst;
+	}
 	return *this;
 }
 
@@ -55,6 +58,7 @@ bool PmergeMe::validateInput(char **input)
 		else if (value < 1)
 			throw InvalidInputException();
 		_seq.push_back(value);
+		_lst.push_back(value);
 		i++;
 	}
 	if (i < 2)
@@ -70,6 +74,7 @@ bool PmergeMe::validateInput(char **input)
 void PmergeMe::mergeInsertion( void )
 {
 	std::vector<std::pair<int, int> > pairs;
+	std::list<std::pair<int, int> > pairsL;
 	clock_t start = clock();
 
 	inPairComparison();
@@ -80,7 +85,19 @@ void PmergeMe::mergeInsertion( void )
 		else
 			pairs.push_back(std::make_pair(*it, INT_MAX));
 	}
+	for (std::list<int>::iterator itL = _lst.begin(); std::next(itL) != _lst.end();)
+	{
+		if (std::next(itL) != _lst.end())
+			pairsL.push_back(std::make_pair(*itL, *std::next(itL)));
+		else
+			pairsL.push_back(std::make_pair(*itL, INT_MAX));
+		++itL;
+		if (itL == _lst.end())
+			break ;
+		++itL;
+	}
 	orderPairs(pairs);
+	orderPairsLst(pairsL);
 	dividePairs();
 
 	clock_t end = clock();
@@ -179,61 +196,6 @@ void PmergeMe::dividePairs( void )
 	check_sorted(_seq);
 }
 
-/* std::vector<int> PmergeMe::merge( std::vector<int> &main, std::vector<int> &left )
-{
-	std::vector<int> g;
-
-	while (static_cast<size_t>(std::accumulate(g.begin(), g.end(), 0)) < left.size())
-	{
-		if (g.size() < 2)
-			g.push_back(2);
-		else
-		{
-			int next_value = static_cast<int>(pow(2, g.size() + 1)) - g.back();
-           	g.push_back(next_value);
-			//std::vector<int>::iterator it = g.end() - 1;
-			//g.push_back(static_cast<int>(pow(2, g.size() + 1)) - *it);
-		}
-	}
-	std::vector<int>::iterator itM = main.begin();
-    std::vector<int>::iterator itG = g.begin();
-    std::vector<int>::iterator it = left.begin();
-    std::advance(it, *itG - 1);
-    std::vector<int>::iterator it1 = left.begin();
-	std::cout << "it: " << *it << " | it1: " << *it1 << " | itG: " << *itG << std::endl;
-
-    while (it != left.end())
-	{
-	    while (it >= left.begin() && ((itG == g.begin()) || (it != it1)))
-	    {
-	        itM = std::upper_bound(main.begin(), main.end(), *it);
-	        main.insert(itM, *it);
-	        std::cout << "Pushed: " << *it << std::endl;
-            it--;
-	    }
-	    if (itG != g.end())
-			++itG;
-	    if (it1 != left.end() && itG != g.end())
-		{
-			//it = left.begin();
-	        //std::advance(it, std::distance(it, it1) + 1);
-	        //it1 = it - 1;
-			//std::advance(it, (std::accumulate(g.begin(), (itG + 1), 0) - 1));
-			it1 += (std::accumulate(g.begin(), itG, 0) - 1);
-			it = it1 + *itG;
-			std::cout << "it: " << *it << " | it1: " << *it1 << " | itG: " << *itG << std::endl;
-	    }
-		if (itG == g.end() && it1 == it)
-			break;
-	}
-
-	std::cout << "After: ";
-	for (std::vector<int>::iterator it = main.begin(); it != main.end(); it++)
-		std::cout << *it << " ";
-	std::cout << std::endl;
-	return main;
-} */
-
 std::vector<int> PmergeMe::merge( std::vector<int> &main, std::vector<int> &left )
 {
 	std::vector<int>::iterator f = left.end() - 1;
@@ -276,6 +238,66 @@ void	PmergeMe::check_sorted(std::vector<int> final)
 	}
 	std::cout << "SORTED\n";
 }
+
+void 				PmergeMe::inPairComparisonLst( void )
+{
+	bool isSwapped = true;
+
+	while (isSwapped)
+	{
+		isSwapped = false;
+		for (std::list<int>::iterator it = _lst.begin(); std::next(it) != _lst.end();)
+        {
+            if (*it > *std::next(it))
+            {
+                std::iter_swap(it, std::next(it));
+                isSwapped = true;
+            }
+			++it;
+			if (it == _lst.end())
+				break ;
+			++it;
+        }
+	}
+}
+
+void 				PmergeMe::orderPairsLst( std::list<std::pair<int, int> > pairs )
+{
+
+}
+
+bool	PmergeMe::compareLst( const std::pair<int,int> &a, const std::pair<int,int> &b )
+{
+
+}
+
+void	PmergeMe::dividePairsLst( void )
+{
+
+}
+
+std::list<int>	PmergeMe::mergeLst( std::list<int> &main, std::list<int> &left )
+{
+
+}
+
+void	PmergeMe::check_sortedLst(std::list<int> final)
+{
+	std::list<int>::iterator	curr = ++final.begin();
+	std::list<int>::iterator	prev = final.begin();
+	std::list<int>::iterator	end = final.end();
+
+	for (; curr != end; curr++)
+	{
+		if (*curr < *prev)
+		{
+			std::cout << "NOT SORTED\n";
+			return;
+		}
+	}
+	std::cout << "SORTED\n";
+}
+
 
 const char *PmergeMe::InvalidInputException::what() const throw()
 {
