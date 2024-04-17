@@ -1,9 +1,12 @@
 #ifndef BITCOINEXCHANGE_HPP
 # define BITCOINEXCHANGE_HPP
 # include <iostream>
+# include <iomanip>
 # include <sstream>
 # include <fstream>
 # include <limits>
+# include <cfloat>
+# include <climits>
 # include <string>
 # include <map>
 
@@ -25,9 +28,10 @@ class BitcoinExchange
 		bool								validateValue( std::string value ) const;
 		bool								checkDate( std::string date ) const;
 		std::string							getClosestDate( std::string date ) const;
-		void								getAmount( std::string date ) const;
+		bool								getAmount( std::string str, std::string date ) const;
 		std::map<std::string, std::string>	getExchangeRate( void ) const;
 		std::map<std::string, std::string>	getBAmount( void ) const;
+		void								printer( void );
 		class CantOpenFileException : public std::exception
 		{
 			public:
@@ -39,7 +43,5 @@ class BitcoinExchange
 				const char *what( void ) const throw();
 		};
 };
-
-std::ostream	&operator<<(std::ostream &out, BitcoinExchange const &object);
 
 #endif

@@ -14,6 +14,7 @@ BitcoinExchange::BitcoinExchange( std::string const &filename )
 	setMap("./dbs/input.csv", _exchangeRate);
 	std::cout << filename << std::endl;
 	setMap("./dbs/" + filename, _bAmount);
+	printer();
 }
 
 BitcoinExchange::BitcoinExchange( BitcoinExchange const &object )
@@ -56,8 +57,6 @@ void	BitcoinExchange::setMap( std::string const &filename, std::map<std::string,
 		throw BadFileException();
 	while (std::getline(file, line))
 	{
-		if (line != "date | value")
-			continue;
 		if (line.length() < 10)
 		{
 			key = line;
@@ -71,11 +70,9 @@ void	BitcoinExchange::setMap( std::string const &filename, std::map<std::string,
 		else
 		{
 			key = line.substr(0, 10);
-			value = line.substr(11, line.length() - 11);
+			value = line.substr(13, line.length() - 13);
 		}
 		map[key] = value;
-		std::cout << key << " => " << value << std::endl;
- 
 	}
 }
 
@@ -85,7 +82,8 @@ bool	BitcoinExchange::checkValue( std::string value ) const
 	std::istringstream iss(value);
 	float f;
 
-	if (!(iss >> f))
+	iss >> f;
+	if (iss.fail())
 	{
 		int dot = 0;
 		for (size_t i = 0; i < value.length(); i++)
@@ -97,8 +95,8 @@ bool	BitcoinExchange::checkValue( std::string value ) const
 				dot++;
 				continue;
 			}
-			if (i == value.length() - 1 && value[i] == 'f')
-			continue;
+			if (i == value.length() - 2 && value[i] == 'f')
+				continue;
 			if (!isdigit(value[i]) || dot > 1)
 			{
 				std::cout << "Error: value is not a number.";
@@ -116,8 +114,7 @@ bool	BitcoinExchange::validateValue( std::string value ) const
 	std::istringstream iss(value);
 	float val;
 
-	if (!(iss >> val))
-		val = 1001;
+	iss >> val;
 	if (val < 0)
 	{
 		std::cout << "Error: value is not positive.";
@@ -155,22 +152,15 @@ bool	BitcoinExchange::checkDate( std::string date ) const
 
 std::string	BitcoinExchange::getClosestDate( std::string date ) const
 {
-	std::map<std::string, std::string>::const_iterator it = _exchangeRate.find(date);
-	if (it != _exchangeRate.end())
-		return date;
-	else
-	{
-		for (it = _exchangeRate.begin(); it != _exchangeRate.end(); it++)
-		{
-			if (it->first > date)
-			{
-				it--;
-				return it->first;
-			}
-		}
-		it--;
-		return it->first;
-	}
+	std::map<std::string, std::string>::const_iterator it = _exchangeRate.lower_bound(date);
+
+	if (it != _exchangeRate.begin() && (it == _exchangeRate.end() || it->first != date))
+        it--;
+    
+    if (it != _exchangeRate.end())
+        return it->first;
+    else
+        return "";
 }
 
 std::map<std::string, std::string>	BitcoinExchange::getExchangeRate( void ) const
@@ -183,38 +173,44 @@ std::map<std::string, std::string>	BitcoinExchange::getBAmount( void ) const
 	return (this->_bAmount);
 }
 
-void	BitcoinExchange::getAmount( std::string date ) const
+bool	BitcoinExchange::getAmount( std::string str, std::string date ) const
 {
 	std::map<std::string, std::string>::const_iterator it_1 = _exchangeRate.find(date);
-	std::map<std::string, std::string>::const_iterator it_2 = _bAmount.find(date);
 	std::istringstream issR(it_1->second);
-	std::istringstream issV(it_2->second);
+	std::istringstream issV(str);
 	float rate;
 	float value;
+	float res;
 
 	issR >> rate;
 	issV >> value;
-	std::cout << it_2->second << " * " << it_1->second << value * rate;
-	return ;
+	res = value * rate;
+	if (res > FLT_MAX)
+		return false;
+	std::cout << date << " => ";
+	std::cout << std::fixed << std::setprecision(2) << value << " = ";
+	std::cout << std::fixed << std::setprecision(2) << res << std::endl;
+	return true;
 }
 
-std::ostream	&operator<<(std::ostream &out, BitcoinExchange const &object)
+void	BitcoinExchange::printer( void )
 {
-	out << "date | value" << std::endl;
-	for (std::map<std::string, std::string>::const_iterator it_1 = object.getBAmount().begin(); it_1 != object.getBAmount().end(); it_1++)
+	std::map<std::string, std::string>::iterator it = _bAmount.begin();
+	
+	std::cout << "date | value" << std::endl;
+	for (; it != _bAmount.end(); it++)
 	{
-		if (object.checkDate(it_1->first))
-			out << "Error: bad input => " << it_1->first << std::endl;
-		else if (!object.checkValue(it_1->second) || !object.validateValue(it_1->second))
-			out << std::endl;
+		if (!checkDate(it->first))
+			std::cout << "Error: bad input => " << it->first << std::endl;
+		else if (!checkValue(it->second) || !validateValue(it->second))
+			std::cout << std::endl;
 		else
 		{
-			out << object.getClosestDate(it_1->first) << " => ";
-			object.getAmount(object.getClosestDate(it_1->first));
-			out << std::endl;
+			std::string date = getClosestDate(it->first);
+			if (!getAmount(it->second, date))
+				std::cout << "Error: too large number." << std::endl;
 		}
 	}
-	return out;
 }
 
 const char	*BitcoinExchange::BadFileException::what() const throw()

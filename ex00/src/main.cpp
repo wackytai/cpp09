@@ -3,7 +3,6 @@
 int	exchanger( std::string filename )
 {
 	BitcoinExchange	exchange ( filename );
-	std::cout << exchange;
 	return 0;
 
 }
@@ -13,7 +12,7 @@ int	main( int argc, char **argv )
 	try
 	{
 		if (argc != 2)
-			exchanger( "" );
+			throw BitcoinExchange::CantOpenFileException();
 		else
 			exchanger( argv[1] );
 	}
